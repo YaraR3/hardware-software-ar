@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#003370">
+  <meta name="description" content="Place a computer desk in markerless augmented reality and find the hardware and the software.">
+  <title>Hardware &amp; Software Markerless AR</title>
+  <link rel="stylesheet" href="game.css?v=1">
+  <style>
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; overflow: hidden; font-family: Montserrat, system-ui, sans-serif; background: #003370; color: #00152f; }
+    button, a { font: inherit; -webkit-tap-highlight-color: transparent; }
+    a-scene, .a-canvas { width: 100vw !important; height: 100vh !important; z-index: 0 !important; }
+    .a-enter-vr, .a-enter-ar, .a-orientation-modal { display: none !important; }
+    /* The overlay carries class a-no-style so A-Frame does not restyle it in AR: its rule
+       ".a-dom-overlay > * { pointer-events: auto }" would force the full-screen game layer to
+       catch every tap, which blocks the buttons and the desk. */
+    #overlay { position: fixed !important; z-index: 2147483646 !important; inset: 0; pointer-events: auto !important; touch-action: manipulation; }
+    .topbar { position: absolute; z-index: 12; top: 0; left: 0; right: 0; pointer-events: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: max(12px, env(safe-area-inset-top)) 12px 12px; }
+    .back, .status { min-height: 44px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 13px; color: white; background: rgba(0,51,112,.92); font-weight: 700; text-decoration: none; pointer-events: auto; touch-action: manipulation; }
+    .status { min-height: 39px; max-width: 60vw; font-size: .86rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+    .start-card { position: absolute; z-index: 11; left: 50%; top: 50%; width: min(90vw, 470px); transform: translate(-50%,-50%); padding: 24px; border: 2px solid #003370; border-radius: 26px; background: #ffffff url("assets/hex-background.jpg") right top / cover no-repeat; box-shadow: 0 22px 70px rgba(0,0,0,.36); text-align: center; pointer-events: auto; }
+    .start-logo { display: block; width: 66px; margin: 0 auto 12px; }
+    .start-card h1 { margin: 0; color: #003370; font-size: clamp(1.5rem, 7vw, 2.1rem); font-weight: 800; line-height: 1.1; }
+    .start-card p { margin: 12px 0 18px; color: #1c3a5c; font-weight: 500; line-height: 1.5; }
+    .primary { width: 100%; min-height: 52px; border: 2px solid #003370; border-radius: 15px; color: white; background: #003370; font-weight: 800; cursor: pointer; touch-action: manipulation; }
+    .primary:disabled { border-color: #b9c7d6; color: #6f8296; background: #dbe5ee; }
+    .quick-backup { width: 100%; min-height: 48px; display: inline-flex; align-items: center; justify-content: center; margin-top: 9px; border: 2px solid #003370; border-radius: 14px; color: #003370; background: white; font-weight: 700; text-decoration: none; }
+    .small-note { display: block; margin-top: 11px; color: #009fd6; font-size: .8rem; font-weight: 700; }
+    .fallback { margin-top: 17px; padding-top: 16px; border-top: 1px solid #c5ddec; }
+    .fallback p { margin: 0 0 11px; color: #9a4b00; font-size: .92rem; }
+    .fallback-links { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .fallback a { min-height: 46px; display: grid; place-items: center; padding: 8px; border: 2px solid #003370; border-radius: 12px; color: #003370; background: white; text-decoration: none; font-weight: 700; }
+    .placement-hint { position: absolute; top: 76px; left: 50%; width: min(88vw, 430px); transform: translateX(-50%); padding: 11px 15px; border-radius: 14px; color: white; background: rgba(0,51,112,.92); box-shadow: 0 8px 28px rgba(0,0,0,.2); text-align: center; font-weight: 700; line-height: 1.35; transition: opacity .2s; pointer-events: none !important; }
+    .placement-hint.hidden { opacity: 0; }
+    .controls { position: absolute; z-index: 11; left: 50%; bottom: 190px; display: flex; gap: 7px; transform: translateX(-50%) translateY(12px); opacity: 0; transition: .2s ease; pointer-events: none; }
+    .controls.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
+    .control { min-width: 47px; min-height: 47px; padding: 0 12px; border: 2px solid #003370; border-radius: 13px; color: #003370; background: rgba(255,255,255,.95); font-size: 1.15rem; font-weight: 800; box-shadow: 0 7px 22px rgba(0,0,0,.22); }
+    .replace { font-size: .8rem; }
+  </style>
+</head>
+<body>
+  <div id="overlay" class="a-no-style">
+    <div class="topbar">
+      <a class="back" href="index.html">← Back</a>
+      <span class="status" id="status">Ready to start</span>
+    </div>
+
+    <section class="start-card" id="startCard" aria-labelledby="startTitle">
+      <img class="start-logo" src="assets/mindscape-mark.png" alt="">
+      <h1 id="startTitle">Place the computer desk</h1>
+      <p id="startText">Move the tablet slowly, tap a desk or the floor, then walk around and find the hardware and the software.</p>
+      <button class="primary" id="startAR" type="button" disabled>Checking this tablet…</button>
+      <a class="quick-backup" href="preview.html">Open interactive 3D instead</a>
+      <small class="small-note">No marker and no installation needed</small>
+      <div class="fallback" id="fallback" hidden>
+        <p>Markerless AR is not supported on this tablet. Choose a backup:</p>
+        <div class="fallback-links">
+          <a href="preview.html">Interactive 3D</a>
+          <a href="marker-ar.html">Marker AR</a>
+        </div>
+      </div>
+    </section>
+
+    <p class="placement-hint hidden" id="placementHint">Move the tablet slowly over a desk or the floor.</p>
+
+    <div class="controls" id="controls" aria-label="Desk controls">
+      <button class="control" id="turnLeft" type="button" aria-label="Turn desk left">↶</button>
+      <button class="control" id="smaller" type="button" aria-label="Make desk smaller">−</button>
+      <button class="control" id="larger" type="button" aria-label="Make desk bigger">+</button>
+      <button class="control" id="turnRight" type="button" aria-label="Turn desk right">↷</button>
+      <button class="control replace" id="replace" type="button">Replace</button>
+    </div>
+
+    <div id="gameUI" hidden></div>
+  </div>
+
+  <template id="sceneTemplate">
+    <a-scene
+      embedded
+      xr-mode-ui="enabled: false; XRMode: ar"
+      device-orientation-permission-ui="enabled: false"
+      webxr="referenceSpaceType: local; requiredFeatures: hit-test; optionalFeatures: dom-overlay; overlayElement: #overlay"
+      renderer="antialias: true; alpha: true; colorManagement: true; precision: high"
+    >
+      <a-entity light="type: ambient; color: #ffffff; intensity: .85"></a-entity>
+      <a-entity light="type: directional; color: #ffffff; intensity: .85" position="2 5 3"></a-entity>
+      <a-ring id="reticle" visible="false" rotation="-90 0 0" radius-inner=".12" radius-outer=".18" color="#009fd6" material="shader: flat; opacity: .95; side: double"></a-ring>
+      <a-entity id="model" tech-desk visible="false" scale=".2 .2 .2"></a-entity>
+      <a-entity id="placement" surface-placement></a-entity>
+      <a-camera></a-camera>
+    </a-scene>
+  </template>
+  <script src="boot-ar.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#003370">
+  <title>Hardware &amp; Software Marker AR Backup</title>
+  <link rel="stylesheet" href="game.css?v=1">
+  <script src="vendor/aframe-1.6.0.min.js"></script>
+  <script src="vendor/aframe-ar-3.4.8.js"></script>
+  <script src="desk.js?v=1"></script>
+  <script src="game.js?v=1"></script>
+  <style>
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; overflow: hidden; font-family: Montserrat, system-ui, sans-serif; background: #003370; color: white; }
+    .topbar { position: fixed; z-index: 20; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; gap: 8px; padding: 12px; pointer-events: none; }
+    .topbar a, .topbar span, .topbar button { pointer-events: auto; min-height: 43px; display: inline-flex; align-items: center; padding: 0 13px; border: 0; border-radius: 12px; color: white; background: rgba(0,51,112,.92); text-decoration: none; font: inherit; font-weight: 700; }
+    .top-controls { display: flex; gap: 6px; }
+    .hint { position: fixed; z-index: 18; inset: 42% auto auto 50%; width: min(86vw, 430px); padding: 16px; border-radius: 16px; transform: translate(-50%,-50%); color: white; background: rgba(0,51,112,.92); text-align: center; font-weight: 600; line-height: 1.45; pointer-events: none; transition: opacity .25s; }
+    .hint.hidden { opacity: 0; }
+    .game-ui .toast { top: 72px; }
+    .a-enter-vr, .a-enter-ar, .a-orientation-modal { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <a href="index.html">← Back</a>
+    <div class="top-controls">
+      <button id="smaller" type="button" aria-label="Make desk smaller">−</button>
+      <button id="larger" type="button" aria-label="Make desk bigger">+</button>
+      <span id="status">Looking for marker</span>
+    </div>
+  </div>
+  <div class="hint" id="hint">Point the tablet at the full black marker. This is the compatibility backup.</div>
+  <div id="gameUI"></div>
+
+  <a-scene embedded xr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" renderer="antialias: true; alpha: true; colorManagement: true; precision: medium" arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono; cameraParametersUrl: assets/camera_para.dat;">
+    <a-marker id="marker" type="pattern" url="assets/patt.hiro" emitevents="true" smooth="true" smooth-count="8" smooth-tolerance="0.01" smooth-threshold="3">
+      <a-entity id="model" tech-desk scale=".2 .2 .2"></a-entity>
+    </a-marker>
+    <a-entity camera cursor="rayOrigin: mouse" raycaster="objects: .desk-target"></a-entity>
+  </a-scene>
+
+  <script>
+    const marker = document.getElementById("marker");
+    const model = document.getElementById("model");
+    const status = document.getElementById("status");
+    const hint = document.getElementById("hint");
+    let scale = .2;
+
+    marker.addEventListener("markerFound", () => {
+      status.textContent = "Desk found";
+      hint.classList.add("hidden");
+    });
+    marker.addEventListener("markerLost", () => {
+      status.textContent = "Looking for marker";
+      hint.classList.remove("hidden");
+    });
+    function setScale(next) {
+      scale = Math.max(.14, Math.min(.28, next));
+      model.setAttribute("scale", `${scale} ${scale} ${scale}`);
+    }
+    document.getElementById("smaller").addEventListener("click", () => setScale(scale - .02));
+    document.getElementById("larger").addEventListener("click", () => setScale(scale + .02));
+    window.DeskGame.start({ root: document.getElementById("gameUI"), mode: "marker" });
+  </script>
+</body>
+</html>

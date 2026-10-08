@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hardware &amp; Software AR Marker</title>
+  <link rel="stylesheet" href="game.css?v=1">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #00152f; background: #ffffff url("assets/hex-background.jpg") right top / cover no-repeat fixed; font-family: Montserrat, system-ui, sans-serif; }
+    main { width: min(820px, calc(100% - 28px)); margin: 24px auto; padding: 34px; border: 2px solid #003370; border-radius: 26px; background: white; text-align: center; }
+    h1 { margin: 0; color: #003370; font-size: clamp(1.7rem, 5vw, 2.5rem); font-weight: 800; }
+    p { margin: 12px auto 22px; max-width: 620px; color: #1c3a5c; font-size: 1.05rem; line-height: 1.5; }
+    .marker { display: block; width: min(470px, 90%); margin: 10px auto 26px; }
+    .buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    a, button { display: inline-flex; min-height: 48px; align-items: center; padding: 0 18px; border: 2px solid #003370; border-radius: 13px; color: white; background: #003370; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+    a { color: #003370; background: white; }
+    @media print {
+      body { background: white; }
+      main { width: 100%; margin: 0; padding: 12mm; border: 0; }
+      .buttons { display: none; }
+      .marker { width: 128mm; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Hardware &amp; Software AR Marker</h1>
+    <p>This page is only for the Marker AR backup. Print it or display it on a second screen, keep the complete black border visible, and place it on a flat surface.</p>
+    <img class="marker" src="assets/hiro.png" alt="Hiro marker for the hardware and software AR activity">
+    <div class="buttons">
+      <button type="button" onclick="window.print()">Print marker</button>
+      <a href="marker-ar.html">Open Marker AR</a>
+      <a href="index.html">Back to activity</a>
+    </div>
+  </main>
+</body>
+</html>

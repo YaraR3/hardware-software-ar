@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <title>Hardware &amp; Software Interactive 3D</title>
+  <link rel="stylesheet" href="game.css?v=1">
+  <script src="vendor/aframe-1.6.0.min.js"></script>
+  <script src="desk.js?v=1"></script>
+  <script src="game.js?v=1"></script>
+  <style>
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; overflow: hidden; font-family: Montserrat, system-ui, sans-serif; background: #ffffff url("assets/hex-background.jpg") right top / cover no-repeat; color: #003370; }
+    button, a { font: inherit; -webkit-tap-highlight-color: transparent; }
+    .bar { position: fixed; z-index: 11; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; gap: 8px; pointer-events: none; }
+    .bar a, .bar button { pointer-events: auto; min-width: 47px; min-height: 47px; padding: 0 13px; border: 2px solid #003370; border-radius: 13px; color: white; background: #003370; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 7px 20px rgba(0,51,112,.18); }
+    .controls { display: flex; gap: 6px; }
+    .game-ui .toast { top: 72px; }
+    a-scene { width: 100vw !important; height: 100vh !important; }
+    .a-enter-vr, .a-enter-ar { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="bar">
+    <a href="index.html">← Back</a>
+    <div class="controls">
+      <button id="turnLeft" type="button" aria-label="Turn desk left">↶</button>
+      <button id="smaller" type="button" aria-label="Make desk smaller">−</button>
+      <button id="larger" type="button" aria-label="Make desk bigger">+</button>
+      <button id="turnRight" type="button" aria-label="Turn desk right">↷</button>
+    </div>
+  </div>
+  <div id="gameUI"></div>
+
+  <a-scene embedded xr-mode-ui="enabled: false" renderer="antialias: true; alpha: true; colorManagement: true">
+    <a-entity light="type: ambient; color: #ffffff; intensity: .85"></a-entity>
+    <a-entity light="type: directional; color: #ffffff; intensity: .85" position="3 7 5"></a-entity>
+    <a-entity id="model" tech-desk position="0 -1.5 -2.4" rotation="0 -22 0" scale="1 1 1"></a-entity>
+    <!-- The rig tilts the view down at the desk; look-controls still lets children drag to look around. -->
+    <a-entity position="0 3.4 7.2" rotation="-22 0 0">
+      <a-entity camera look-controls="touchEnabled: true; mouseEnabled: true" cursor="rayOrigin: mouse" raycaster="objects: .desk-target"></a-entity>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    const model = document.getElementById("model");
+    let scale = 1;
+    let yaw = -22;
+    function setScale(next) {
+      scale = Math.max(.6, Math.min(1.5, next));
+      model.object3D.scale.setScalar(scale);
+    }
+    function setYaw(next) {
+      yaw = next;
+      model.setAttribute("rotation", `0 ${yaw} 0`);
+    }
+    document.getElementById("smaller").addEventListener("click", () => setScale(scale - .1));
+    document.getElementById("larger").addEventListener("click", () => setScale(scale + .1));
+    document.getElementById("turnLeft").addEventListener("click", () => setYaw(yaw + 20));
+    document.getElementById("turnRight").addEventListener("click", () => setYaw(yaw - 20));
+    window.DeskGame.start({ root: document.getElementById("gameUI"), mode: "3d" });
+  </script>
+</body>
+</html>
