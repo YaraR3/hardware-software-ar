@@ -22,7 +22,8 @@ monitor. That difference is the lesson's rule made visible: "if I can touch it, 
    and the software in either order; two slots in the mission panel fill in. When both are
    found a beam links them and the pair does its job (see the table), then a badge card shows.
 3. **Bonus: the condition.** The rover drives along its track with its program blocks above
-   it. Question: "IF the sensor sees something, THEN the robot will…" (Stop / Keep going).
+   it (the six blocks from the rover deck: start, motor power 8, motor this way, wait for
+   the motion sensor, motor off, play sound 1). Question: "IF the sensor sees something, THEN the robot will…" (Stop / Keep going).
    The child tests it by walking the tablet up to the rover (camera AR only) or with the
    "Put a wall" button (all modes). It stops and beeps; step back and it drives again.
 4. Trophy card, then free exploration.
@@ -34,7 +35,7 @@ monitor. That difference is the lesson's rule made visible: "if I can touch it, 
 | `watch` | `monitor` | `video` | a looping film on the monitor |
 | `listen` | `speaker` | `music` | speaker cones pulse, notes float, a tune plays |
 | `photo` | `tablet` | `camera` | flash, then a photo on the tablet |
-| `robot` | `robot` | `program` | the rover starts driving |
+| `robot` | `robot` | `program` (shown as "WeDo 2.0") | the rover starts driving |
 
 Wording for the children comes from the deck where possible ("You need both to draw!",
 "Hardware is what we touch. Software is a program we use."). Conditions are phrased

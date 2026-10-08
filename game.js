@@ -13,7 +13,7 @@
     { id: "photo", icon: "📷", prompt: "I want to take a picture!", goal: "take a picture", hardware: "tablet", software: "camera", done: "You need both to take a picture!", badge: "Photographer",
       hardwareHint: "Look for the flat screen you can carry.", softwareHint: "Look up! Find the program with the camera." },
     { id: "robot", icon: "🤖", prompt: "I want to move the robot!", goal: "move the robot", hardware: "robot", software: "program", done: "You need both to move the robot!", badge: "Robot Coder",
-      hardwareHint: "Look for the machine with six wheels.", softwareHint: "Look up! Find the program with the puzzle piece." }
+      hardwareHint: "Look for the machine with six wheels.", softwareHint: "Look up! Find WeDo 2.0, the app we use to program the robot." }
   ];
   const BONUS = { id: "condition", icon: "⭐", badge: "Condition Master" };
   const TOTAL = missions.length + 1;
@@ -73,6 +73,12 @@
       chip.dataset.mission = mission.id;
       el.progress.appendChild(chip);
     });
+
+    // "the mouse" / "The mouse"; a product name such as WeDo 2.0 stays as it is.
+    function nameOf(id, capital) {
+      const item = desk.items[id];
+      return item.proper ? item.title : `${capital ? "The" : "the"} ${item.title.toLowerCase()}`;
+    }
 
     function layout() {
       if (options.onLayout) options.onLayout(root.hidden ? 0 : el.mission.offsetHeight);
@@ -174,7 +180,7 @@
     function askAboutPrograms(item) {
       showCard({
         icon: "😴",
-        title: `The ${item.title.toLowerCase()} is not working!`,
+        title: `${nameOf(item.id, true)} is not working!`,
         message: "The parts are here, but no program is running. Can the computer parts work without a program?",
         note: "Decide together, then tap!",
         buttons: [
@@ -206,15 +212,15 @@
         desk.flashTarget(item.element, "#f7a83b");
         if ((filled.hardware || filled.software) && item.kind !== missing) {
           showToast(missing === "software"
-            ? `The ${item.title.toLowerCase()} is hardware too. Now find the software: a program!`
-            : `The ${item.title.toLowerCase()} is software too. Now find the hardware: a part you can touch!`);
+            ? `${nameOf(item.id, true)} is hardware too. Now find the software: a program!`
+            : `${nameOf(item.id, true)} is software too. Now find the hardware: a part you can touch!`);
         } else {
-          showToast(`The ${item.title.toLowerCase()} is ${item.kind}, but it cannot help us ${mission.goal}. Keep looking!`);
+          showToast(`${nameOf(item.id, true)} is ${item.kind}, but it cannot help us ${mission.goal}. Keep looking!`);
         }
         return;
       }
       if (filled[slot]) {
-        showToast(`You already have the ${item.title.toLowerCase()}. Now find the ${missing}!`);
+        showToast(`You already have ${nameOf(item.id)}. Now find the ${missing}!`);
         return;
       }
       filled[slot] = true;
@@ -224,8 +230,8 @@
       if (!(filled.hardware && filled.software)) {
         desk.sound("right");
         showToast(slot === "hardware"
-          ? `Yes! The ${item.title.toLowerCase()} is hardware: you can touch it. Now find the software!`
-          : `Yes! The ${item.title.toLowerCase()} is software: it is a program. Now find the hardware!`);
+          ? `Yes! ${nameOf(item.id, true)} is hardware: you can touch it. Now find the software!`
+          : `Yes! ${nameOf(item.id, true)} is software: it is a program. Now find the hardware!`);
         layout();
         return;
       }
@@ -244,7 +250,7 @@
           icon: mission.icon,
           title: mission.done,
           badge: `Badge earned: ${mission.badge}`,
-          message: `The ${desk.items[mission.hardware].title.toLowerCase()} is hardware. The ${desk.items[mission.software].title.toLowerCase()} is software. They work together!`,
+          message: `${nameOf(mission.hardware, true)} is hardware. ${nameOf(mission.software, true)} is software. They work together!`,
           buttons: [{ label: last ? "One more thing…" : "Next mission", action: last ? askAboutCondition : nextMission }]
         });
       }, 1600);

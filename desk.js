@@ -40,7 +40,7 @@
     write: { id: "write", kind: "software", title: "Writing app", icon: "📝", tile: "#cfe0ff" },
     video: { id: "video", kind: "software", title: "Video app", icon: "🎬", tile: "#ffd0d6" },
     music: { id: "music", kind: "software", title: "Music app", icon: "🎵", tile: "#d9ccff" },
-    program: { id: "program", kind: "software", title: "Program app", icon: "🧩", tile: "#c9efd2" },
+    program: { id: "program", kind: "software", title: "WeDo 2.0", proper: true, icon: "🧩", tile: "#bfe6f6" },
     camera: { id: "camera", kind: "software", title: "Camera app", icon: "📷", tile: "#ffd4e6" }
   };
 
@@ -182,46 +182,79 @@
     ctx.closePath();
   }
 
-  // The five blocks of the rover program from last session:
-  // start, motor on, wait for the sensor, motor stop, play a sound.
+  // The rover program from last session, block for block as on the lesson slide:
+  // start, motor power 8, motor this way, wait for the motion sensor, motor off,
+  // play sound 1.
   const BLOCKS = [
-    { color: "#f2c417", glyph: "▶", ink: "#2f9e44" },
+    { color: "#f2c417", glyph: "start", ink: "#2f9e44" },
+    { color: "#2f9e44", glyph: "gauge", ink: "#ffffff", number: "8" },
     { color: "#2f9e44", glyph: "↻", ink: "#ffffff" },
-    { color: "#f2c417", glyph: "⏳", ink: "#3a2a00", tab: true },
+    { color: "#f2c417", glyph: "⏳", ink: "#3a2a00", sensor: true },
     { color: "#2f9e44", glyph: "✖", ink: "#ffffff" },
-    { color: "#e03131", glyph: "♪", ink: "#ffffff" }
+    { color: "#e03131", glyph: "♪", ink: "#ffffff", number: "1" }
   ];
 
   function blocksTexture(active) {
-    return canvasTexture(640, 176, (ctx) => {
+    return canvasTexture(768, 176, (ctx) => {
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
       BLOCKS.forEach((block, i) => {
-        const x = 12 + i * 124;
+        const x = 12 + i * 125;
+        const cx = x + 59;
         const lit = active.includes(i);
         ctx.globalAlpha = lit ? 1 : .5;
         ctx.fillStyle = block.color;
-        roundRect(ctx, x, 14, 118, 118, 18);
+        roundRect(ctx, x, 12, 118, 118, 18);
         ctx.fill();
-        if (block.tab) {
-          ctx.fillStyle = palette.orange;
-          roundRect(ctx, x + 14, 124, 90, 40, 10);
+        if (block.number) {
+          // The white number box that hangs under a block.
+          ctx.fillStyle = "#1c9be6";
+          roundRect(ctx, x + 20, 120, 78, 46, 10);
           ctx.fill();
           ctx.fillStyle = "#ffffff";
-          ctx.font = `800 24px ${FONT}`;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText("IF 👀", x + 59, 145);
+          roundRect(ctx, x + 26, 126, 66, 34, 6);
+          ctx.fill();
+          ctx.fillStyle = "#10253e";
+          ctx.font = `800 28px ${FONT}`;
+          ctx.fillText(block.number, cx, 144);
+        }
+        if (block.sensor) {
+          // The orange motion-sensor tab: a little sensor brick with two eyes.
+          ctx.fillStyle = palette.orange;
+          roundRect(ctx, x + 14, 120, 90, 46, 10);
+          ctx.fill();
+          ctx.fillStyle = "#ffffff";
+          roundRect(ctx, x + 26, 131, 42, 24, 6);
+          ctx.fill();
+          ctx.fillStyle = "#10253e";
+          [x + 54, x + 63].forEach((ex) => { ctx.beginPath(); ctx.arc(ex, 143, 3.5, 0, Math.PI * 2); ctx.fill(); });
+          ctx.fillStyle = "#ffffff";
+          ctx.font = `800 26px ${FONT}`;
+          ctx.fillText("↔", x + 86, 143);
         }
         if (lit) {
           ctx.lineWidth = 7;
           ctx.strokeStyle = "#ffffff";
-          roundRect(ctx, x + 3, 17, 112, 112, 16);
+          roundRect(ctx, x + 3, 15, 112, 112, 16);
           ctx.stroke();
         }
         ctx.fillStyle = block.ink;
-        ctx.font = `800 70px ${FONT}, ${EMOJI}`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(block.glyph, x + 59, 76);
+        ctx.strokeStyle = block.ink;
+        if (block.glyph === "gauge") {
+          // Motor power: a speedometer.
+          ctx.lineWidth = 11;
+          ctx.lineCap = "round";
+          ctx.beginPath(); ctx.arc(cx, 88, 34, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
+          ctx.lineWidth = 8;
+          ctx.beginPath(); ctx.moveTo(cx, 90); ctx.lineTo(cx + 20, 60); ctx.stroke();
+          ctx.beginPath(); ctx.arc(cx, 90, 8, 0, Math.PI * 2); ctx.fill();
+        } else if (block.glyph === "start") {
+          // Drawn by hand: the "▶" character turns into a blue emoji on tablets.
+          ctx.beginPath(); ctx.moveTo(cx - 20, 42); ctx.lineTo(cx + 30, 71); ctx.lineTo(cx - 20, 100); ctx.closePath(); ctx.fill();
+        } else {
+          ctx.font = `800 70px ${FONT}, ${EMOJI}`;
+          ctx.fillText(block.glyph, cx, 74);
+        }
       });
       ctx.globalAlpha = 1;
     });
@@ -832,8 +865,8 @@
     const eye = place(new THREE.Mesh(new THREE.RingGeometry(.13, .17, 24), eyeMaterial), { p: [.83, 1.54, 0], r: [0, 90, 0] });
     rover.add(eye);
 
-    const blockTextures = { drive: blocksTexture([0, 1, 2]), stop: blocksTexture([3, 4]) };
-    const blocks = sprite(blockTextures.drive, 2.2, .6);
+    const blockTextures = { drive: blocksTexture([0, 1, 2, 3]), stop: blocksTexture([4, 5]) };
+    const blocks = sprite(blockTextures.drive, 2.7, .62);
     blocks.position.set(0, 2.3, 0);
     blocks.visible = false;
     blocks.renderOrder = 2;
