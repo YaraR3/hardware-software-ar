@@ -129,6 +129,7 @@ h1 {
 }
 
 .pair span { display: block; font-size: 2.2rem; }
+.app-icon { height: 1.15em; border-radius: .22em; vertical-align: -.2em; }
 .pair small { color: var(--navy); font-weight: 300; }
 .pair b { color: var(--navy); font-size: 1.5rem; }
 .pair p { grid-column: 1 / -1; margin: 4px 0 0; color: var(--navy); font-weight: 600; }

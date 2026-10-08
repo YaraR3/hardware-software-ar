@@ -40,7 +40,7 @@
     write: { id: "write", kind: "software", title: "Writing app", icon: "📝", tile: "#cfe0ff" },
     video: { id: "video", kind: "software", title: "Video app", icon: "🎬", tile: "#ffd0d6" },
     music: { id: "music", kind: "software", title: "Music app", icon: "🎵", tile: "#d9ccff" },
-    program: { id: "program", kind: "software", title: "WeDo 2.0", proper: true, icon: "🧩", tile: "#bfe6f6" },
+    program: { id: "program", kind: "software", title: "WeDo 2.0", proper: true, icon: "🧩", image: "assets/wedo-icon.png", tile: "#bfe6f6" },
     camera: { id: "camera", kind: "software", title: "Camera app", icon: "📷", tile: "#ffd4e6" }
   };
 
@@ -306,27 +306,47 @@
       ctx.fillStyle = palette.navy;
       ctx.fillText("♪", 48, 52);
     })),
-    tile: (item) => canvasTexture(256, 320, (ctx) => {
-      ctx.shadowColor = "rgba(0,159,214,.95)";
-      ctx.shadowBlur = 26;
-      ctx.fillStyle = "#ffffff";
-      roundRect(ctx, 30, 26, 196, 196, 44);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = item.tile;
-      roundRect(ctx, 44, 40, 168, 168, 34);
-      ctx.fill();
-      ctx.font = `112px ${EMOJI}`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(item.icon, 128, 130);
-      ctx.fillStyle = palette.navy;
-      roundRect(ctx, 14, 244, 228, 56, 28);
-      ctx.fill();
-      ctx.fillStyle = "#ffffff";
-      ctx.font = `700 27px ${FONT}`;
-      ctx.fillText(item.title, 128, 273);
-    }),
+    tile: (item) => {
+      const texture = canvasTexture(256, 320, (ctx) => {
+        ctx.shadowColor = "rgba(0,159,214,.95)";
+        ctx.shadowBlur = 26;
+        ctx.fillStyle = "#ffffff";
+        roundRect(ctx, 30, 26, 196, 196, 44);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = item.tile;
+        roundRect(ctx, 44, 40, 168, 168, 34);
+        ctx.fill();
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        if (!item.image) {
+          ctx.font = `112px ${EMOJI}`;
+          ctx.fillText(item.icon, 128, 130);
+        }
+        ctx.fillStyle = palette.navy;
+        roundRect(ctx, 14, 244, 228, 56, 28);
+        ctx.fill();
+        ctx.fillStyle = "#ffffff";
+        ctx.font = `700 27px ${FONT}`;
+        ctx.fillText(item.title, 128, 273);
+      });
+      // An app with a real icon (WeDo 2.0): the picture is painted over the tile
+      // as soon as it has loaded.
+      if (item.image) {
+        const picture = new Image();
+        picture.onload = function () {
+          const ctx = texture.image.getContext("2d");
+          ctx.save();
+          roundRect(ctx, 44, 40, 168, 168, 34);
+          ctx.clip();
+          ctx.drawImage(picture, 44, 40, 168, 168);
+          ctx.restore();
+          texture.needsUpdate = true;
+        };
+        picture.src = item.image;
+      }
+      return texture;
+    },
     badge: (icon) => canvasTexture(256, 256, (ctx) => {
       ctx.shadowColor = "rgba(0,40,70,.35)";
       ctx.shadowBlur = 14;

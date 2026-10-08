@@ -13,7 +13,7 @@
     { id: "photo", icon: "📷", prompt: "I want to take a picture!", goal: "take a picture", hardware: "tablet", software: "camera", done: "You need both to take a picture!", badge: "Photographer",
       hardwareHint: "Look for the flat screen you can carry.", softwareHint: "Look up! Find the program with the camera." },
     { id: "robot", icon: "🤖", prompt: "I want to move the robot!", goal: "move the robot", hardware: "robot", software: "program", done: "You need both to move the robot!", badge: "Robot Coder",
-      hardwareHint: "Look for the machine with six wheels.", softwareHint: "Look up! Find WeDo 2.0, the app we use to program the robot." }
+      hardwareHint: "Look for the machine with six wheels.", softwareHint: "Look up! Find WeDo 2.0, the blue app we use to program the robot." }
   ];
   const BONUS = { id: "condition", icon: "⭐", badge: "Condition Master" };
   const TOTAL = missions.length + 1;
@@ -95,7 +95,15 @@
     function setSlot(name, item) {
       const slot = el[name];
       slot.classList.toggle("filled", !!item);
-      slot.querySelector("strong").textContent = item ? `${item.icon} ${item.title}` : "?";
+      const text = slot.querySelector("strong");
+      const image = item && desk.items[item.id].image;
+      text.textContent = !item ? "?" : image ? item.title : `${item.icon} ${item.title}`;
+      if (image) {
+        const picture = document.createElement("img");
+        picture.src = image;
+        picture.alt = "";
+        text.prepend(picture);
+      }
     }
 
     function showMission() {
@@ -363,9 +371,10 @@
       } else {
         desk.flashTarget(item.element, "#45e28b");
         desk.bounce(item.id);
+        const label = desk.items[item.id].image ? item.title : `${item.icon} ${item.title}`;
         showToast(item.kind === "hardware"
-          ? `${item.icon} ${item.title}: hardware. You can touch it!`
-          : `${item.icon} ${item.title}: software. It is a program!`);
+          ? `${label}: hardware. You can touch it!`
+          : `${label}: software. It is a program!`);
       }
     });
 

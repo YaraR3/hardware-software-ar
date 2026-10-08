@@ -33,6 +33,7 @@
 .game-ui .slot { min-width: 0; padding: 6px 10px 7px; border: 2px dashed #9cc9e2; border-radius: 14px; background: #f5fbff; text-align: center; transition: .2s ease; }
 .game-ui .slot small { display: block; color: var(--brand); font-size: .66rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .game-ui .slot strong { display: block; overflow: hidden; color: var(--navy); font-size: .95rem; font-weight: 800; white-space: nowrap; text-overflow: ellipsis; }
+.game-ui .slot strong img { height: 1.25em; margin-right: 5px; border-radius: 5px; vertical-align: -.28em; }
 .game-ui .slot.filled { border-style: solid; border-color: #1d9b73; background: #e6f8ef; }
 .game-ui .plus { color: var(--navy); font-size: 1.3rem; font-weight: 800; }
 
