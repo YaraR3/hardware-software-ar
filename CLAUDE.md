@@ -112,14 +112,19 @@ From the lesson slides: navy `#003370`, cyan `#009fd6`, white with the pale hexa
 Montserrat (800 for titles, 300–500 for body), white cards with a 2px navy outline and large
 radius, question buttons as side-by-side outlined pills.
 
-## Not done yet
+## Publishing
 
-- Not published. It needs its own GitHub repo and Pages site (camera AR needs HTTPS), then a
-  QR page like Smart City's `qr.html` with a QR image for the new URL.
-- No commits yet; git is initialised on `main` with no remote.
-- On this PC: no `gh` CLI (the GitHub API works with the Git Credential Manager token for
-  `YaraR3` via `git credential fill`); HTTPS pushes of the vendor files needed
-  `git config http.postBuffer 157286400`; phones cannot reach a LAN server here, so tablet
-  testing goes through the published site.
-- Not yet tried on a real tablet. Things to watch there: the half-metre "walk up" distance,
-  whether the beeps play in AR, and whether the app tiles are easy to tap at the default size.
+Live at https://yarar3.github.io/hardware-software-ar/ from the public repo
+`YaraR3/hardware-software-ar` (branch `main`, root). Pushing to `main` redeploys in about a
+minute. `qr.html` shows `assets/project-qr.png`, which points at that address.
+
+On this PC: no `gh` CLI (the GitHub API works with the Git Credential Manager token for
+`YaraR3` via `git credential fill`); `http.postBuffer` is raised in this repo's git config
+because pushes of the vendor files disconnected without it; phones cannot reach a LAN server
+here, so tablet testing goes through the published site.
+
+## Not checked yet
+
+Not yet tried on a real tablet. Things to watch there: the half-metre "walk up" distance,
+whether the beeps play in AR, whether the app tiles are easy to tap at the default size, and
+the marker AR backup (it needs a real camera, so the headless test does not cover it).
